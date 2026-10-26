@@ -1,4 +1,4 @@
-
+#Arturo Estrada Dominguez (23760315) 7SE
 hechos = {
     #ontologia de grupos
     ("mamifero", "es_un", "grupo"),
@@ -50,22 +50,30 @@ hechos = {
     ("vaca", "tiene_caracteristica", "da leche"),
     }
 
+#consulta de hechos que utiliza una tupla (sujeto, predicado, objeto) con valores none como
+# comodin para cualquier valor 
 def consultar_animal(s=None, p=None, o=None):
     return [(a, b, c) for (a, b, c) in hechos 
             if s in (None, a) 
             and p in (None, b)
             and o in (None, c)]
 
+#se extrae x si cumple la condicion, infiriendo su clasificacion
+#ejemplo de reglas 
+#regla 1: si tiene pelo entonces es un mamifero 
 mamiferos_con_pelo = {x for (x, r, y) in hechos if r == "tiene_caracteristica" and y == "tiene pelo"}
 
+#regla 2: si da leche entonces es un mamifero
 mamiferos_por_leche = {x for (x, r, y) in hechos if r == "tiene_caracteristica" and y == "da leche"}
 
+#regla 3: si tiene plumas entonces es un ave
 aves_con_plumas = {x for (x, r, y) in hechos if r == "tiene_caracteristica" and y == "tiene plumas"}
 
 # prueba
 if __name__ == "__main__":
     animal_consulta = "vaca"
 
+#se verifica si el animal cumple con alguna de las reglas para inferir su clasificacion
     es_mamifero = (animal_consulta in mamiferos_con_pelo) or (animal_consulta in mamiferos_por_leche)
     es_ave = (animal_consulta in aves_con_plumas)
 
