@@ -48,5 +48,27 @@ hechos = {
     ("vaca", "tiene_caracteristica", "hembra"),
     ("vaca", "tiene_caracteristica", "tiene ubres"),
     ("vaca", "tiene_caracteristica", "da leche"),
-
     }
+
+def consultar_animal(s=None, p=None, o=None):
+    return [(a, b, c) for (a, b, c) in hechos 
+            if s in (None, a) 
+            and p in (None, b)
+            and o in (None, c)]
+
+mamiferos_con_pelo = {x for (x, r, y) in hechos if r == "tiene_caracteristica" and y == "tiene pelo"}
+
+mamiferos_por_leche = {x for (x, r, y) in hechos if r == "tiene_caracteristica" and y == "da leche"}
+
+aves_con_plumas = {x for (x, r, y) in hechos if r == "tiene_caracteristica" and y == "tiene plumas"}
+
+# prueba
+if __name__ == "__main__":
+    animal_consulta = "vaca"
+
+    es_mamifero = (animal_consulta in mamiferos_con_pelo) or (animal_consulta in mamiferos_por_leche)
+    es_ave = (animal_consulta in aves_con_plumas)
+
+    print(f"resultado de la consulta para el animal '{animal_consulta}':")
+    print(f"  es un mamifero?: {es_mamifero}")
+    print(f"  es un ave?: {es_ave}")
