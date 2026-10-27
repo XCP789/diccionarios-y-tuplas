@@ -16,7 +16,7 @@ predicados = {
     ("ColaHorizontal", "c_horizontal", "x tiene una cola horizontal"),
     ("TieneBranquias", "branquias", "x respira mediante branquias"),
     ("ColaVertical", "c_vertical", "x tiene una cola vertical"),
-    ("EsHembra", "hembra", "x es de sexo femenino"),
+    ("EsHembra", "hembra", "x es una hembra"),
     ("TieneUbres", "ubres", "x posee ubres"),
     ("DaLecheComercial", "leche_comercial", "x produce leche para consumo comercial")
 }
