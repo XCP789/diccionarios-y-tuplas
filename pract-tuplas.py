@@ -1,4 +1,26 @@
 #Arturo Estrada Dominguez (23760315) 7SE
+
+#predicados de la ontologia
+predicados = {
+    ("TienePelo", "pelo", "x tiene pelaje"),
+    ("DaLeche", "leche", "x da leche a sus crias"),
+    ("ColorLeonado", "leonado", "x tiene color leonado"),
+    ("TieneManchas", "manchas", "x tiene manchas oscuras"),
+    ("TieneRayas", "rayas", "x tiene rayas negras"),
+    ("CuelloLargo", "cuello largo", "x posee un cuello largo"),
+    ("Nada", "natacion", "x puede nadar"),
+    ("Blanco y negro", "blancoNegro", "x es de color blanco y negro"),
+    ("VuelaMuyBien", "vuela bien", "x tiene buena habilidad para volar"),
+    ("EsAcuatico", "acuatico", "x habita en el agua"),
+    ("RespiraPorEspiraculo", "espiraculo", "x respira por un espiraculo"),
+    ("ColaHorizontal", "c_horizontal", "x tiene una cola horizontal"),
+    ("TieneBranquias", "branquias", "x respira mediante branquias"),
+    ("ColaVertical", "c_vertical", "x tiene una cola vertical"),
+    ("EsHembra", "hembra", "x es de sexo femenino"),
+    ("TieneUbres", "ubres", "x posee ubres"),
+    ("DaLecheComercial", "leche_comercial", "x produce leche para consumo comercial")
+}
+
 hechos = {
     #ontologia de grupos
     ("mamifero", "es_un", "grupo"),
@@ -26,28 +48,32 @@ hechos = {
     ("pinguino", "pertenece_a", "ave"),
     ("albatro", "pertenece_a", "ave"),
     ("delfin", "pertenece_a", "mamifero"),
-    ("tiburon", "pertenece_a", "mamifero"),
     ("vaca", "pertenece_a", "rumiante"),
 
     # caracteristicas de cada animal
-    ("guepardo", "tiene_caracteristica", "color leonado"),
-    ("guepardo", "tiene_caracteristica", "manchas oscuras"),    
-    ("tigre", "tiene_caracteristica", "color leonado"),
-    ("tigre", "tiene_caracteristica", "rayas negras"),
+    ("guepardo", "tiene_caracteristica", "leonado"),
+    ("guepardo", "tiene_caracteristica", "manchas"),    
+    ("tigre", "tiene_caracteristica", "leonado"),
+    ("tigre", "tiene_caracteristica", "rayas"),
     ("jirafa", "tiene_caracteristica", "cuello largo"),
-    ("jirafa", "tiene_caracteristica", "manchas oscuras"),
-    ("cebra", "tiene_caracteristica", "rayas negras"),
-    ("pinguino", "tiene_caracteristica", "nada"), #nada de la accion de nadar
-    ("pinguino", "tiene_caracteristica", "blanco y negro"),
-    ("albatro", "tiene_caracteristica", "vuela muy bien"),
+    ("jirafa", "tiene_caracteristica", "manchas"),
+    ("cebra", "tiene_caracteristica", "rayas"),
+    ("pinguino", "tiene_caracteristica", "natacion"), 
+    ("pinguino", "tiene_caracteristica", "blancoNegro"),
+    ("albatro", "tiene_caracteristica", "vuela bien"),
     ("delfin", "tiene_caracteristica", "acuatico"),
-    ("delfin", "tiene_caracteristica", "respira por espiraculo"),
-    ("delfin", "tiene_caracteristica", "cola horizontal"),
+    ("delfin", "tiene_caracteristica", "espiraculo"),
+    ("delfin", "tiene_caracteristica", "c_horizontal"),
     ("tiburon", "tiene_caracteristica", "tiene branquias"),
-    ("tiburon", "tiene_caracteristica", "cola vertical"),
+    ("tiburon", "tiene_caracteristica", "c_vertical"),
     ("vaca", "tiene_caracteristica", "hembra"),
-    ("vaca", "tiene_caracteristica", "tiene ubres"),
-    ("vaca", "tiene_caracteristica", "da leche"),
+    ("vaca", "tiene_caracteristica", "ubres"),
+    ("vaca", "tiene_caracteristica", "leche_comercial"),
+
+    #vinculos de las entrevistas
+    ("delfin", "confunde_con", "tiburon"),
+    ("vaca", "confunde_con", "toro"),
+    ("vaca", "confunde_con", "bisonte"),
     }
 
 #consulta de hechos que utiliza una tupla (sujeto, predicado, objeto) con valores none como
@@ -58,25 +84,34 @@ def consultar_animal(s=None, p=None, o=None):
             and p in (None, b)
             and o in (None, c)]
 
-#se extrae x si cumple la condicion, infiriendo su clasificacion
-#ejemplo de reglas 
-#regla 1: si tiene pelo entonces es un mamifero 
-mamiferos_con_pelo = {x for (x, r, y) in hechos if r == "tiene_caracteristica" and y == "tiene pelo"}
+#se busca la traduccion descriptiva dentro de la estructura de predicados para un predicado dado
+def obtener_traduccion(valor_caracteristica):
+    for nombre, valor, traduccion in predicados:
+        if valor == valor_caracteristica:
+            return traduccion
+    return "x tiene esta caracteristica"
 
-#regla 2: si da leche entonces es un mamifero
-mamiferos_por_leche = {x for (x, r, y) in hechos if r == "tiene_caracteristica" and y == "da leche"}
-
-#regla 3: si tiene plumas entonces es un ave
-aves_con_plumas = {x for (x, r, y) in hechos if r == "tiene_caracteristica" and y == "tiene plumas"}
+#se extrae x si cumple la condicion
+#ejemplo de reglas para inferir hechos a partir de los hechos existentes
+ 
+animales_validos = {x for (x, r, y) in hechos if r == "es_un" and y == "animal"}
+grupo_animal = {(x, y) for (x, r, y) in hechos if r == "pertenece_a"}
+caracteristicas_animales = {(x, y) for (x, r, y) in hechos if r == "tiene_caracteristica"}
 
 # prueba
 if __name__ == "__main__":
     animal_consulta = "vaca"
 
-#se verifica si el animal cumple con alguna de las reglas para inferir su clasificacion
-    es_mamifero = (animal_consulta in mamiferos_con_pelo) or (animal_consulta in mamiferos_por_leche)
-    es_ave = (animal_consulta in aves_con_plumas)
+    #pregunta si el animal es valido
+    print(f"'{animal_consulta}' es un animal valido?: {animal_consulta in animales_validos}")
 
-    print(f"resultado de la consulta para el animal '{animal_consulta}':")
-    print(f"  es un mamifero?: {es_mamifero}")
-    print(f"  es un ave?: {es_ave}")
+    #consulta los grupos
+    grupos = [y for (x, y) in grupo_animal if x == animal_consulta]
+    print(f"grupo al que pertenece '{animal_consulta}': {grupos}")
+
+    #extrae las caracteristicas del animal
+    print(f"caracteristicas de '{animal_consulta}':")
+    caracteristicas = [y for (x, y) in caracteristicas_animales if x == animal_consulta]
+    for c in caracteristicas:
+        traduccion = obtener_traduccion(c).replace("x", animal_consulta.capitalize())
+        print(f"- {traduccion}")
